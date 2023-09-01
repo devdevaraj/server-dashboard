@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import next from "next";
 import http from "http";
 
+import router from "./router";
+
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -16,6 +18,7 @@ const port = 3000;
         server.use(express.urlencoded({
             extended: true
         }));
+        server.use("/api", router);
         server.all("/*", (req: Request, res: Response) => {
             return handle(req, res);
         });
