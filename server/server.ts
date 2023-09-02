@@ -31,9 +31,15 @@ function ioPromise(io:any):Promise<any[]> {
         const server = express();
         const httpServer = http.createServer(server);
         const io = new Server(httpServer);
-        const socketPromise = ioPromise(io);
+        ioPromise(io)
+        .then(async (socketPromise:any[]) => {
+            const [socket,io] = socketPromise;
+            socket.on("command", (command:string) => {
+                console.log(`Socket: ${command}`);
+            });
+        })
 
-        socketController(socketPromise);
+        // socketController(socketPromise);
 
         server.use(express.json());
         server.use(express.urlencoded({
