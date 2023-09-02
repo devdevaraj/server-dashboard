@@ -4,8 +4,8 @@ import http from "http";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 
-import router from "./router";
-import socketController from "./controllers/socket.controller";
+import router from "./routers/rest.router";
+import socketRouter from "./routers/socket.router";
 
 dotenv.config();
 const dev = process.env.NODE_ENV !== "production";
@@ -17,7 +17,7 @@ function ioPromise(io:any):Promise<any[]> {
     return new Promise((resolve, rejecct) => {
         io.on("connection", (socket:any) => {
             console.log("One user connected!");
-            socket.on("diconnect", () => {
+            socket.on("disconnect", () => {
                 console.log("User disconnected!");
             });
             resolve([socket,io]);
@@ -33,11 +33,8 @@ function ioPromise(io:any):Promise<any[]> {
         const io = new Server(httpServer);
         ioPromise(io)
         .then(async (socketPromise:any[]) => {
-            const [socket,io] = socketPromise;
-            socket.on("command", (command:string) => {
-                console.log(`Socket: ${command}`);
-            });
-        })
+            socketRouter(socketPromise);
+        });
 
         // socketController(socketPromise);
 
@@ -51,7 +48,7 @@ function ioPromise(io:any):Promise<any[]> {
         });
         httpServer.listen(port, (err?: any) => {
             if (err) throw err;
-            console.log(`>Server ready on port: ${port} - env ${process.env.NODE_ENV}`);
+            console.log(`>Server ready on: http://localhost:${port} - env ${process.env.NODE_ENV}`);
         });
     } catch (error) {
         console.log(error);

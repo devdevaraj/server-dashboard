@@ -23,6 +23,7 @@ export default function Home() {
     console.log("Socket connected!");
     
     return () => {
+      console.log("Socket disconnected!");
       socket.disconnect();
     };
   },[]);
